@@ -7,6 +7,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+motor = "^3.4.0"
+isodate = "^0.6.1"
+python-dotenv = "^1.0.1"
+python-dateutil = "^2.9.0.post0"
 
 
 [build-system]
