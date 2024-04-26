@@ -1,9 +1,11 @@
+import datetime
 import json
 from json import JSONDecodeError
 
 from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
+from dateutil.parser import parser
 
 from statistic.main import Statistic
 
@@ -14,6 +16,18 @@ router = Router()
 def get_exception_message(query: list[dict]):
     f, s, t = query
     return f'Допустимо отправлять только следующие запросы: \n{json.dumps(f)}\n{json.dumps(s)}\n{json.dumps(t)}'
+
+
+def check_dates(query):
+    if all(
+            ["dt_from" in query, "dt_upto" in query, "group_type" in query]
+    ) and query['group_type'] in ['month', 'day', 'hour']:
+        try:
+            datetime.datetime.fromisoformat(query['dt_from'])
+            datetime.datetime.fromisoformat(query['dt_upto'])
+            return True
+        except:
+            return False
 
 
 @router.message(CommandStart())
@@ -34,7 +48,7 @@ async def get_result(message: Message):
     ]
     try:
         data = json.loads(message.text)
-        if data in valid_query:
+        if check_dates(data):
             statistic = Statistic(
                 start_date=data['dt_from'],
                 end_date=data['dt_upto'],
